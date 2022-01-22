@@ -8,8 +8,8 @@ const char* apSsid     = "DN";
 const char* apPassword = "billrocks123";
 const char* clientSsid     = "DNFirstPlaceCornhacks2022";
 const char* clientPassword = "billrocks123";
-
-HTTPClient http;
+const char* serverURL = "http://192.168.1.6:8080/";
+const int espID = 1;
 
 WiFiEventHandler probeRequestPrintHandler;
 
@@ -47,9 +47,10 @@ void setup() {
 
 void loop() {
   delay(3000);
-  String json = "";
 
+  String json = "";
   StaticJsonDocument<256> jsonBuffer;
+  jsonBuffer["espID"] = espID;
   JsonArray probes = jsonBuffer.createNestedArray("probes");
 
   for(WiFiEventSoftAPModeProbeRequestReceived w : myList) {
@@ -62,8 +63,15 @@ void loop() {
   serializeJsonPretty(jsonBuffer, json);
   Serial.println("json:" + json);
 
-  http.begin("http://192.168.1.3");
+  WiFiClient client;
+  HTTPClient http;
+  http.begin(client, serverURL);
   http.addHeader("Content-Type", "application/json");
-  http.POST(json);
+  int httpCode = http.POST(json);
+
+  // httpCode will be negative on error
+  if (httpCode < 0) {
+    Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
+  }
   http.end();
 }
