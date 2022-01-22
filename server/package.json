@@ -1,0 +1,22 @@
+{
+  "name": "cornhacks-202",
+  "description": "",
+  "version": "1.0.0",
+  "scripts": {
+    "run": "node server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dillon-Howell/cornhacks-2022.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dillon-Howell/cornhacks-2022/issues"
+  },
+  "homepage": "https://github.com/Dillon-Howell/cornhacks-2022",
+  "devDependencies": {
+    "@types/node": "^17.0.10"
+  }
+}
