@@ -12,8 +12,6 @@ export default class Device {
     /**
      * We calculated this by hand by getting data points and signal strengths
      * at distance intervals and then creating a function that matches this.
-     * Some very helpful information and credit where credit is due:
-     * https://stackoverflow.com/questions/19723641/find-intersecting-point-of-three-circles-programmatically
      *
      * @param rssi the negative value of the rssi which is the signal strength
      * @return the distance in feet
@@ -22,8 +20,23 @@ export default class Device {
         return -(rssi / 1.8) + 43;
     }
 
+    // Dubbed down to MOE (margin of error) for triangularization
     private static EPSILON = 5;
 
+    /**
+     * Some very helpful information and credit where credit is due:
+     * https://stackoverflow.com/questions/19723641/find-intersecting-point-of-three-circles-programmatically
+     *
+     * @param x0
+     * @param y0
+     * @param r0
+     * @param x1
+     * @param y1
+     * @param r1
+     * @param x2
+     * @param y2
+     * @param r2
+     */
     calculateThreeCircleIntersection(x0: number, y0: number, r0: number,
                                      x1: number, y1: number, r1: number,
                                      x2: number, y2: number, r2: number): boolean {

@@ -21,8 +21,16 @@ export const db = new DB();
 export function run(req: IncomingMessage, res: ServerResponse) {
   const url = req.url;
   if (url ==='/devices') {
-    res.write('<h1>about us page<h1>'); //write a response
-    res.end(); //end the response
+    // Convert map to JSON object
+    const jsonObject = {};
+    devices.forEach((value, key) => {
+      jsonObject[key] = {
+        macAddress: value.macAddress,
+      }
+    });
+    // Send it back
+    res.write(JSON.stringify(jsonObject));
+    res.end();
   } else {
     // Default
     let body = "";
