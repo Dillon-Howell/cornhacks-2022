@@ -1,4 +1,13 @@
+const https = require('https')
+
 export default class Device {
+    // Esp locations which are hardcoded for simplicity
+    private static ESPS = {
+        1: [0, 0],
+        2: [0, 0],
+        3: [0, 0],
+    };
+
     macAddress: string;
     // The key is the ID of the esp and the value is the rssi
     espsStrength: Map<number, number>;
@@ -109,5 +118,26 @@ export default class Device {
             console.log("INTERSECTION Circle1 AND Circle2 AND Circle3:", "NONE");
         }
         return true;
+    }
+
+    lookupMacAddress(): Promise<string> {
+        return new Promise((resolve, reject) => {
+            https.get("https://macvendors.co/api/" + this.macAddress, (response) => {
+                let chunks_of_data = [];
+
+                response.on('data', (fragments) => {
+                    chunks_of_data.push(fragments);
+                });
+
+                response.on('end', () => {
+                    let response_body = Buffer.concat(chunks_of_data);
+                    resolve(response_body.toString());
+                });
+
+                response.on('error', (error) => {
+                    reject(error);
+                });
+            });
+        });
     }
 }
