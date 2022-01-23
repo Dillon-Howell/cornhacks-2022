@@ -1,5 +1,5 @@
 export default interface Probe {
-    address: string
-    rssi: number
-    timestamp: number
+    address?: string,
+    rssi?: number,
+    timestamp?: Date,
 }
