@@ -3,7 +3,7 @@
   "description": "",
   "version": "1.0.0",
   "scripts": {
-    "run": "node server.ts"
+    "run": "npx ts-node server.ts"
   },
   "repository": {
     "type": "git",

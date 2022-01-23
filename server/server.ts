@@ -26,7 +26,12 @@ export function run(req: IncomingMessage, res: ServerResponse) {
   req.on('end', function () {
     console.log('Body: ' + body);
 
-    db.newData(JSON.parse(body));
+    try {
+      db.newData(JSON.parse(body));
+    } catch (e) {
+      // Yeah do nothing as usual
+      console.log('Something bad happened: ' + e);
+    }
 
     res.writeHead(200);
     res.end(postHTML);
