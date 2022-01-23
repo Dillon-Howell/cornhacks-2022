@@ -28,7 +28,9 @@ describe('DB', function () {
                 ]
             }
             db.newData(data);
-            assert.equal(db.esps, {});
+            assert.equal(db.esps.get(1).get("76:15:85:df:50:1e").rssi, -54);
+            assert.equal(db.esps.get(1).get("ce:95:4b:28:69:cc").rssi, -65);
+            assert.equal(db.esps.get(1).get("84:fd:d1:67:49:54").rssi, -65);
         });
 
         it("properly loads data and updates", async () => {
@@ -69,29 +71,9 @@ describe('DB', function () {
                 ]
             };
             db.newData(data2);
-            assert.equal(JSON.parse(db.esps), {
-                1: {
-                    "76:15:85:df:50:1e": {
-                        "address": "76:15:85:df:50:1e",
-                        "rssi": -69
-                    },
-                    "ce:95:4b:28:69:cc": {
-                        "address": "ce:95:4b:28:69:cc",
-                        "rssi": -34
-                    },
-                    "84:fd:d1:67:49:54": {
-                        "address": "84:fd:d1:67:49:54",
-                        "rssi": -65
-                    }
-                },
-            });
-        });
-
-        it("test", async () => {
-            const test = new Map<number, string>();
-            test.has(1);
-            test.set(1, "test");
-            test.has(1);
+            assert.equal(db.esps.get(1).get("76:15:85:df:50:1e").rssi, -69);
+            assert.equal(db.esps.get(1).get("ce:95:4b:28:69:cc").rssi, -34);
+            assert.equal(db.esps.get(1).get("84:fd:d1:67:49:54").rssi, -65);
         });
     });
 });

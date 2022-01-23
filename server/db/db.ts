@@ -14,6 +14,10 @@ export default class DB {
         }
 
         data.probes.forEach((probe) => {
+            if (probe.timestamp == undefined) {
+                probe.timestamp = new Date();
+            }
+
             this.esps.get(data.espID).set(probe.address, probe);
         }, this);
     }
