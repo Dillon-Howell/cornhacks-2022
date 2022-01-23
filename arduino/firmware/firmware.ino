@@ -9,7 +9,7 @@ const char* apPassword = "billrocks123";
 const char* clientSsid     = "DNFirstPlaceCornhacks2022";
 const char* clientPassword = "billrocks123";
 const char* serverURL = "http://192.168.1.6:8080/";
-const int espID = 1;
+const int espID = 3;
 
 WiFiEventHandler probeRequestPrintHandler;
 
@@ -49,15 +49,18 @@ void loop() {
   delay(3000);
 
   String json = "";
-  StaticJsonDocument<256> jsonBuffer;
+  StaticJsonDocument<1024> jsonBuffer;
   jsonBuffer["espID"] = espID;
   JsonArray probes = jsonBuffer.createNestedArray("probes");
 
   for(WiFiEventSoftAPModeProbeRequestReceived w : myList) {
-    StaticJsonDocument<256> probe;
-    probe["address"] = macToString(w.mac);
-    probe["rssi"] = w.rssi;
-    probes.add(probe);
+    StaticJsonDocument<1024> probe;
+    String macAddress = macToString(w.mac);
+    if (!macAddress.isEmpty() && macAddress != NULL && w.rssi != NULL) {
+      probe["address"] = macToString(w.mac);
+      probe["rssi"] = w.rssi;
+      probes.add(probe);
+    }
   }
   myList.clear();
   serializeJsonPretty(jsonBuffer, json);
