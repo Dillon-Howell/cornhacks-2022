@@ -67,7 +67,7 @@ export function updateDevices() {
     db.esps.get(firstKey).forEach((value: Probe, macAddress: string) => {
       // Create the new device if it does not exist
       if (!devices.has(macAddress)) {
-        devices.set(macAddress, new Device());
+        devices.set(macAddress, new Device(macAddress));
       }
       // Add the first key
       devices.get(macAddress).espsStrength.set(firstKey, value.rssi);
