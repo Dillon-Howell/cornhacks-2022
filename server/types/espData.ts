@@ -1,4 +1,6 @@
+import Probe from "./probe";
+
 export default interface EspData {
-    address: string
-    rssi: number
+    "espID": number
+    "probes": Array<Probe>
 }
