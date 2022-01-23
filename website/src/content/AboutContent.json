@@ -1,0 +1,16 @@
+{
+  "title": "Contact Tracing, Smart House, HotSpot Finder",
+  "text": "Big Brother uses your modern WiFi capable device to track your every move, even if you don't connect to anything!",
+  "section": [
+    {
+      "title": "Why?",
+      "content": "Because we can!",
+      "icon": "notes.svg"
+    },
+    {
+      "title": "No seriously, why?!",
+      "content": "From contact tracing infected individuals to changing your homes temperature as you leave the room (yay, environment!), Big Brother can make peoples lives easier with the technology they already carry around everyday!",
+      "icon": "notes.svg"
+    }
+  ]
+}
