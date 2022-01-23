@@ -25,7 +25,12 @@ export default class Device {
 
     constructor(macAddress?: string, espsStrength?: Map<number, number>) {
         this.macAddress = macAddress ?? "";
-        this.name = "";
+        if (this.macAddress) {
+            // this.lookupMacAddress();
+            this.name = "";
+        } else {
+            this.name = "";
+        }
         this.espsStrength = espsStrength ?? new Map<number, number>();
     }
 
@@ -37,11 +42,11 @@ export default class Device {
      * @return the distance in feet
      */
     rssiToDistance(rssi: number) {
-        return -(rssi / 1.8) + 43;
+        return (1.5 * -rssi) - (43 * 1.5);
     }
 
     // Dubbed down to MOE (margin of error) for triangularization
-    private static EPSILON = 5;
+    private static EPSILON = 50;
 
     /**
      * Some very helpful information and credit where credit is due:
@@ -132,23 +137,21 @@ export default class Device {
         return null;
     }
 
-    lookupMacAddress(): Promise<string> {
-        return new Promise((resolve, reject) => {
-            https.get("https://macvendors.co/api/" + this.macAddress, (response) => {
-                let chunks_of_data = [];
+    lookupMacAddress() {
+        https.get("https://macvendors.co/api/" + this.macAddress, (response) => {
+            let chunks_of_data = [];
 
-                response.on('data', (fragments) => {
-                    chunks_of_data.push(fragments);
-                });
+            response.on('data', (fragments) => {
+                chunks_of_data.push(fragments);
+            });
 
-                response.on('end', () => {
-                    let response_body = Buffer.concat(chunks_of_data);
-                    resolve(response_body.toString());
-                });
+            response.on('end', () => {
+                let response_body = Buffer.concat(chunks_of_data);
+                this.name = JSON.parse(response_body.toString())['result']['company'] ?? this.macAddress;
+            });
 
-                response.on('error', (error) => {
-                    reject(error);
-                });
+            response.on('error', (error) => {
+                this.name = this.macAddress;
             });
         });
     }
@@ -157,18 +160,20 @@ export default class Device {
      * Creates the needed data for the /devices path to be utilized for displaying location
      * of devices.
      */
-    async getData() {
-        if (this.espsStrength.size >= 3) {
+    getData() {
+        if (this.espsStrength.size < 3) {
             return null;
         }
 
-        let x, y = this.calculateThreeCircleIntersection(
+        let xy = this.calculateThreeCircleIntersection(
             Device.ESPS["1"]["x"], Device.ESPS["1"]["y"], this.rssiToDistance(this.espsStrength.get(1)),
             Device.ESPS["2"]["x"], Device.ESPS["2"]["y"], this.rssiToDistance(this.espsStrength.get(2)),
             Device.ESPS["3"]["x"], Device.ESPS["3"]["y"], this.rssiToDistance(this.espsStrength.get(3)));
-        if (!this.name) {
-            this.name = JSON.parse(await this.lookupMacAddress())['result']['company'] ?? this.macAddress;
+        if (xy == null) {
+            return null;
         }
+        const x = Math.round(xy[0]);
+        const y = Math.round(xy[1]);
 
         return {
             macAddress: this.macAddress,

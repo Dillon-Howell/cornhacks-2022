@@ -23,9 +23,10 @@ export function run(req: IncomingMessage, res: ServerResponse) {
   if (url ==='/devices') {
     // Convert map to JSON object
     const jsonObject = {};
-    devices.forEach((value, key) => {
-      jsonObject[key] = {
-        macAddress: value.macAddress,
+    devices.forEach(async (value, key) => {
+      const data = value.getData();
+      if (data != null) {
+        jsonObject[key] = data;
       }
     });
     // Send it back
