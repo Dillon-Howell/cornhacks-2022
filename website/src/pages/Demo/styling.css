@@ -1,0 +1,11 @@
+.cell {
+    /* center the cell content */
+   justify-content: center;
+   align-items: center;
+   display: flex;
+   font-family: Arial;
+   font-size: 1px;
+   font-weight: bold;
+ }
+
+ /* 192.168.1.6 */
