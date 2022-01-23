@@ -1,4 +1,4 @@
-import DB from "../../../db/db";
+import DB from "../../../dataStructures/db";
 let chai = require('chai');
 const assert = chai.assert;
 
@@ -26,7 +26,7 @@ describe('DB', function () {
                         "rssi": -65
                     }
                 ]
-            }
+            };
             db.newData(data);
             assert.equal(db.esps.get(1).get("76:15:85:df:50:1e").rssi, -54);
             assert.equal(db.esps.get(1).get("ce:95:4b:28:69:cc").rssi, -65);
