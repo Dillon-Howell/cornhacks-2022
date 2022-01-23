@@ -56,8 +56,9 @@ void loop() {
   for(WiFiEventSoftAPModeProbeRequestReceived w : myList) {
     StaticJsonDocument<1024> probe;
     String macAddress = macToString(w.mac);
+
     if (!macAddress.isEmpty() && macAddress != NULL && w.rssi != NULL) {
-      probe["address"] = macToString(w.mac);
+      probe["address"] = macAddress;
       probe["rssi"] = w.rssi;
       probes.add(probe);
     }
