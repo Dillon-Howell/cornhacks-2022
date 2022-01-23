@@ -1,20 +1,31 @@
 const https = require('https')
 
 export default class Device {
-    // Esp locations which are hardcoded for simplicity
+    // Esp locations which are hardcoded for simplicity.
     private static ESPS = {
-        1: [0, 0],
-        2: [0, 0],
-        3: [0, 0],
+        1: {
+            x: 65,
+            y: 60,
+        },
+        2: {
+            x: 126,
+            y: 43,
+        },
+        3: {
+            x: 119,
+            y: 78,
+        },
     };
 
     macAddress: string;
+    name: string;
     // The key is the ID of the esp and the value is the rssi
     espsStrength: Map<number, number>;
 
 
     constructor(macAddress?: string, espsStrength?: Map<number, number>) {
         this.macAddress = macAddress ?? "";
+        this.name = "";
         this.espsStrength = espsStrength ?? new Map<number, number>();
     }
 
@@ -48,7 +59,7 @@ export default class Device {
      */
     calculateThreeCircleIntersection(x0: number, y0: number, r0: number,
                                      x1: number, y1: number, r1: number,
-                                     x2: number, y2: number, r2: number): boolean {
+                                     x2: number, y2: number, r2: number): Array<number> {
         let a: number;
         let dx: number;
         let dy: number;
@@ -69,11 +80,11 @@ export default class Device {
         // Check for solvability.
         if (d > (r0 + r1)) {
             // no solution. circles do not intersect.
-            return false;
+            return null;
         }
         if (d < Math.abs(r0 - r1)) {
             // no solution. one circle is contained in the other
-            return false;
+            return null;
         }
 
         // 'point 2' is the point where the line through the circle
@@ -110,14 +121,15 @@ export default class Device {
         dy = intersectionPoint2_y - y2;
         let d2 = Math.sqrt((dy*dy) + (dx*dx));
 
-        if(Math.abs(d1 - r2) < Device.EPSILON) {
+        if (Math.abs(d1 - r2) < Device.EPSILON) {
             console.log("INTERSECTION Circle1 AND Circle2 AND Circle3:", "(" + intersectionPoint1_x + "," + intersectionPoint1_y + ")");
+            return [intersectionPoint1_x, intersectionPoint1_y];
         } else if(Math.abs(d2 - r2) < Device.EPSILON) {
             console.log("INTERSECTION Circle1 AND Circle2 AND Circle3:", "(" + intersectionPoint2_x + "," + intersectionPoint2_y + ")"); //here was an error
         } else {
             console.log("INTERSECTION Circle1 AND Circle2 AND Circle3:", "NONE");
         }
-        return true;
+        return null;
     }
 
     lookupMacAddress(): Promise<string> {
@@ -139,5 +151,29 @@ export default class Device {
                 });
             });
         });
+    }
+
+    /**
+     * Creates the needed data for the /devices path to be utilized for displaying location
+     * of devices.
+     */
+    async getData() {
+        if (this.espsStrength.size >= 3) {
+            return null;
+        }
+
+        let x, y = this.calculateThreeCircleIntersection(
+            Device.ESPS["1"]["x"], Device.ESPS["1"]["y"], this.rssiToDistance(this.espsStrength.get(1)),
+            Device.ESPS["2"]["x"], Device.ESPS["2"]["y"], this.rssiToDistance(this.espsStrength.get(2)),
+            Device.ESPS["3"]["x"], Device.ESPS["3"]["y"], this.rssiToDistance(this.espsStrength.get(3)));
+        if (!this.name) {
+            this.name = JSON.parse(await this.lookupMacAddress())['result']['company'] ?? this.macAddress;
+        }
+
+        return {
+            macAddress: this.macAddress,
+            name: this.name,
+            xy: x + "-" + y,
+        };
     }
 }
