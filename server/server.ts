@@ -57,11 +57,29 @@ export function updateDevices() {
       devices.get(macAddress).espsStrength.set(firstKey, value.rssi);
       // Now go to each esp and get the data from it
       keys.forEach((key) => {
-        devices.get(macAddress).espsStrength.set(key, db.esps.get(key).get(macAddress).rssi);
-      });
-    });
+        devices.get(macAddress).espsStrength.set(key, db.esps.get(key).get(macAddress)?.rssi);
+      }, this);
+    }, this);
   }
 }
 
 // Runs every x ms
 setInterval(updateDevices, 3000);
+
+// This is just for debugging which will print the db
+setInterval(() => {
+  console.log("Printing DB...");
+  db.esps.forEach((value, key) => {
+    console.log("\t" + key + ":");
+    value.forEach((value) => {
+      console.log("\t\t" + value.address);
+      console.log("\t\t" + value.rssi);
+      console.log("\t\t" + value.timestamp);
+    });
+  });
+}, 5000);
+// This is just for debugging which will print the devices
+setInterval(() => {
+  console.log("Printing DB...");
+  console.log(devices);
+}, 5500);
