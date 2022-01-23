@@ -9,7 +9,7 @@ const char* apPassword = "billrocks123";
 const char* clientSsid     = "DNFirstPlaceCornhacks2022";
 const char* clientPassword = "billrocks123";
 const char* serverURL = "http://192.168.1.6:8080/";
-const int espID = 3;
+const int espID = 1;
 
 WiFiEventHandler probeRequestPrintHandler;
 
