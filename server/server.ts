@@ -19,28 +19,36 @@ export const db = new DB();
 
 // Function to run for the server
 export function run(req: IncomingMessage, res: ServerResponse) {
-  let body = "";
-  req.on('data', function (chunk) {
-    body += chunk;
-  });
-  req.on('end', function () {
-    console.log('Body: ' + body);
+  const url = req.url;
+  if (url ==='/devices') {
+    res.write('<h1>about us page<h1>'); //write a response
+    res.end(); //end the response
+  } else {
+    // Default
+    let body = "";
+    req.on('data', function (chunk) {
+      body += chunk;
+    });
+    req.on('end', function () {
+      console.log('Body: ' + body);
 
-    try {
-      db.newData(JSON.parse(body));
-    } catch (e) {
-      // Yeah do nothing as usual
-      console.log('Something bad happened: ' + e);
-    }
+      try {
+        db.newData(JSON.parse(body));
+      } catch (e) {
+        // Yeah do nothing as usual
+        console.log('Something bad happened: ' + e);
+      }
 
-    res.writeHead(200);
-    res.end(postHTML);
-  });
+      res.writeHead(200);
+      res.end(postHTML);
+    });
+  }
 }
 
 http.createServer(run).listen(8080);
 
-// Create a map of devices
+// Create a map of devices. The key is the MAC address of the device and
+// the value is the Device object
 const devices = new Map<string, Device>();
 export function updateDevices() {
   const keys = Array.from(db.esps.keys());
